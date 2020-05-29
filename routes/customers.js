@@ -1,30 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
-const Joi = require("joi");
-
-const Customer = mongoose.model(
-	"Customer",
-	mongoose.Schema({
-		isGold: {
-			required: true,
-			type: Boolean,
-		},
-		name: {
-			type: String,
-			required: true,
-			minlength: 3,
-			maxlength: 255,
-			lowercase: true,
-		},
-		phone: {
-			required: true,
-			type: Number,
-			minlength: 10,
-			maxlength: 10,
-		},
-	})
-);
+const {Customer, validate} = require('../models/customer')
 
 router.get("/", async (req, res) => {
 	const customers = await Customer.find().sort("name");
@@ -33,7 +9,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
 	try {
-		const { error, value } = validateCustomer(req.body);
+		const { error, value } = validate(req.body);
 		if (error) return res.status(400).send(error.details[0].message);
 		const customer = await Customer.create({
 			isGold: value.isGold,
@@ -49,8 +25,8 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
 	try {
-		const { error, value } = validateCustomer(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		const { error, value } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 		const customer = await Customer.findByIdAndUpdate(
 			req.params.id,
 			{
@@ -60,6 +36,7 @@ router.put("/:id", async (req, res) => {
 			},
 			{ new: true }
     );
+    if (!customer) return res.status(404).send('The genre with the given ID was not found.');
     res.send(customer)
 	} catch (err) {
     res.status(400).send("There was an error...", err);
@@ -83,14 +60,5 @@ router.delete('/:id', async (req, res) => {
     res.status(400).send("There was an error...", err);
   }
 })
-
-const validateCustomer = (customer) => {
-	const schema = Joi.object().keys({
-		isGold: Joi.boolean().required(),
-		name: Joi.string().min(3).max(255).required(),
-		phone: Joi.number().required(),
-	});
-	return Joi.validate(customer, schema);
-};
 
 module.exports = router;
