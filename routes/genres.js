@@ -28,6 +28,7 @@ router.put('/:id', async (req, res) => {
         name: req.body.name
       },
     {
+      
       new: true
     });
     if (!genre) return res.status(404).send('The genre with the given ID was not found.');
