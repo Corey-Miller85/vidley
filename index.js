@@ -4,6 +4,7 @@ const app = express();
 const helmet = require('helmet')
 const genres = require('./routes/genres')
 const customers = require('./routes/customers')
+const movies = require('./routes/movies')
 
 
 mongoose.connect('mongodb://localhost/vidley', { useNewUrlParser: true })
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 
 
 
