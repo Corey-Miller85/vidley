@@ -1,24 +1,37 @@
-const mongoose = require('mongoose');
-const {Genre} = require('./genre')
+const mongoose = require("mongoose");
+const { Genre, genreSchema } = require("./genre");
+const Joi = require('joi')
 
-const Movies = mongoose.model('Movie', mongoose.Schema({
-  title: {
-    type: String
-  },
-  genre: {
-   type: Genre
-  },
-  numberInStock: {
-    type: Number
-  },
-  dailyRentalRate: {
-    type: Number
-  }
-})) 
+const movieSchema = mongoose.Schema({
+	title: {
+		type: String,
+	},
+	genre: {
+		type: genreSchema,
+		required: true,
+	},
+	numberInStock: {
+		type: Number,
+		default: 1,
+	},
+	dailyRentalRate: {
+		type: Number,
+		default: 0,
+	},
+});
 
-async function createMovie(movie, genreId) {
-  const genre = await Genre.findById(genreId)
-  console.log(genre)
+const Movie = mongoose.model("Movies", movieSchema);
+
+function validateMovie(genre) {
+	const schema = {
+    title: Joi.string().min(3).required(),
+    genre: Joi.string().min(3).required(),
+    numberInStock: Joi.number().min(0).max(255).required(),
+    dailyRentalRate: Joi.number().min(0).max(255).required()
+	};
+
+	return Joi.validate(genre, schema);
 }
 
-createMovie('5ed325994aea7417eafc720d')
+module.exports.Movie = Movie;
+module.exports.validateMovie = validateMovie;
