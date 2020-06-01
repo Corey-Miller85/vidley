@@ -20,12 +20,12 @@ const movieSchema = mongoose.Schema({
 	},
 });
 
-const Movie = mongoose.model("Movies", movieSchema);
+const Movie = mongoose.model("Movie", movieSchema);
 
 function validateMovie(genre) {
 	const schema = {
-    title: Joi.string().min(3).required(),
-    genre: Joi.string().min(3).required(),
+		title: Joi.string().min(3).required(),
+		genre: Joi.string().required(),
     numberInStock: Joi.number().min(0).max(255).required(),
     dailyRentalRate: Joi.number().min(0).max(255).required()
 	};
