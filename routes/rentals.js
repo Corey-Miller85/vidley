@@ -41,4 +41,5 @@ router.get('/:id', async (req, res) => {
   
   res.send(rentalRecord);
 })
+
 module.exports = router;
